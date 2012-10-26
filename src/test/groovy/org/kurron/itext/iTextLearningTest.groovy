@@ -30,7 +30,7 @@ class iTextLearningTest extends Specification
 
         when: "page is built"
         document.open()
-        document.add( new Chunk( "私の友人は彼にこのテキストを与えるために私に尋ねた", createFont( '/home/ron/git/itext-experiment/src/test/resources/MSGOTHIC.TTF' ) ) )
+        document.add( new Chunk( "私の友人は彼にこのテキストを与えるために私に尋ねた", createFont( 'MSGOTHIC.TTF' ) ) )
         document.add( Chunk.NEWLINE )
 
         then: "pdf file is created"
@@ -54,10 +54,10 @@ class iTextLearningTest extends Specification
         table.setWidthPercentage( 100 )
 
         and: "loaded fonts"
-        Font chineseSimplified = createFont( '/home/ron/git/itext-experiment/src/test/resources/HeiS.ttf' )
-        Font chineseTraditional = createFont( '/home/ron/git/itext-experiment/src/test/resources/HeiS.plusLatin.ttf' )
-        Font japanese = createFont( '/home/ron/git/itext-experiment/src/test/resources/MSGOTHIC.TTF' )
-        Font korean = createFont( '/home/ron/git/itext-experiment/src/test/resources/Dotum.ttf' )
+        Font chineseSimplified = createFont( 'HeiS.ttf' )
+        Font chineseTraditional = createFont( 'HeiS.plusLatin.ttf' )
+        Font japanese = createFont( 'MSGOTHIC.TTF' )
+        Font korean = createFont( 'Dotum.ttf' )
 
         when: "CJK text is added"
         table.addCell( createCell( korean, PdfWriter.RUN_DIRECTION_LTR, "내 친구는 그에게이 텍스트를 제공달라고 부탁했습니다" ) );
@@ -100,12 +100,46 @@ class iTextLearningTest extends Specification
         return new Font( createBaseFont( fontName ), 18 )
     }
 
-    def BaseFont createBaseFont( String fontName )
+    def BaseFont createBaseFont( String resourceName )
     {
-        BaseFont font = BaseFont.createFont( fontName, BaseFont.IDENTITY_H, BaseFont.EMBEDDED )
+        def stream = getClass().getClassLoader().getResourceAsStream( resourceName )
+        assert stream
+
+        BaseFont font = BaseFont.createFont( resourceName , BaseFont.IDENTITY_H, BaseFont.EMBEDDED, BaseFont.CACHED, copyToByteArray( stream ), new byte[0] )
         println 'font name = ' + font.postscriptFontName
         return font
     }
 
+    def byte[] copyToByteArray( final InputStream input ) throws IOException
+    {
+        final byte[] buffer
+        if ( null == input )
+        {
+            buffer = new byte[0]
+        }
+        else
+        {
+            final ByteArrayOutputStream out = new ByteArrayOutputStream( 2048 )
+            copyStream( input, out )
+            buffer = out.toByteArray()
+            input.close()
+            out.close()
+        }
+        return buffer
+    }
+
+    def void copyStream( final InputStream input, final OutputStream output ) throws IOException
+    {
+        final byte[] buffer = new byte[4096];
+        while( true )
+        {
+            final int bytesRead = input.read( buffer );
+            if( -1 == bytesRead )
+            {
+                break;
+            }
+            output.write( buffer, 0, bytesRead );
+        }
+    }
 
 }
