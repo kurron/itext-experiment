@@ -31,6 +31,8 @@ class iTextLearningTest extends Specification
         document.open()
         document.add( new Chunk( "私の友人は彼にこのテキストを与えるために私に尋ねた", createFont( 'MSGOTHIC.TTF' ) ) )
         document.add( Chunk.NEWLINE )
+        document.add( new Chunk( "هلا وسهلا", createFont( 'TLArabic.ttf' ) ) )
+        document.add( Chunk.NEWLINE )
 
         then: "pdf file is created"
 
