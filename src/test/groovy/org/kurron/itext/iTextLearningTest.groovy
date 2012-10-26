@@ -25,8 +25,6 @@ class iTextLearningTest extends Specification
         given: "document"
         Document document = new Document()
         Closeable stream = new FileOutputStream( "hello.pdf" )
-        PdfWriter writer = PdfWriter.getInstance( document, stream )
-
 
         when: "page is built"
         document.open()
@@ -46,7 +44,6 @@ class iTextLearningTest extends Specification
         given: "open document"
         Document document = new Document( PageSize.A4 )
         Closeable stream = new FileOutputStream( "bob.pdf" )
-        PdfWriter writer = PdfWriter.getInstance( document, stream )
         document.open()
 
         and: "one column table"
@@ -58,15 +55,16 @@ class iTextLearningTest extends Specification
         Font chineseTraditional = createFont( 'HeiS.plusLatin.ttf' )
         Font japanese = createFont( 'MSGOTHIC.TTF' )
         Font korean = createFont( 'Dotum.ttf' )
+        Font arabic = createFont( 'TLArabic.ttf' )
 
         when: "CJK text is added"
         table.addCell( createCell( korean, PdfWriter.RUN_DIRECTION_LTR, "내 친구는 그에게이 텍스트를 제공달라고 부탁했습니다" ) );
         table.addCell( createCell( japanese, PdfWriter.RUN_DIRECTION_LTR, "私の友人は彼にこのテキストを与えるために私に尋ねた" ) );
         table.addCell( createCell( chineseSimplified, PdfWriter.RUN_DIRECTION_LTR, "我的朋友问我给了他这个文本" ) );
         table.addCell( createCell( chineseTraditional, PdfWriter.RUN_DIRECTION_LTR, "我的朋友問我給了他這個文本" ) );
+        document.add( table )
 
         then: "PDF contains the example CJK text"
-        document.add( table )
 
         cleanup:
         document.close()
