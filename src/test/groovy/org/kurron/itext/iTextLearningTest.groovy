@@ -14,12 +14,45 @@ import com.itextpdf.text.pdf.PdfPTable
 import com.itextpdf.text.pdf.PdfPCell
 import com.itextpdf.text.Paragraph
 import com.itextpdf.text.Element
+import com.itextpdf.text.Image
 
 /**
  * Trying to figure out how the iText library works.
  */
 class iTextLearningTest extends Specification
 {
+    def "images"()
+    {
+        given: "document"
+        Document document = new Document()
+        Closeable stream = new FileOutputStream( "images.pdf" )
+        PdfWriter writer = PdfWriter.getInstance( document, stream )
+
+        when: "page is built"
+        document.open()
+        document.add( new Chunk( loadImage( "car.jpg" ), 0, 0, true ) )
+        document.add( Chunk.NEWLINE )
+        document.add( new Chunk( loadImage( "flower.png" ), 0, 0, true ) )
+        document.add( Chunk.NEWLINE )
+        document.add( new Chunk( loadImage( "ship.gif" ), 0, 0, true ) )
+        document.add( Chunk.NEWLINE )
+        document.add( new Chunk( loadImage( "puppy.bmp" ), 0, 0, true ) )
+
+        then: "pdf file is created"
+
+        cleanup:
+        document.close()
+        stream.close()
+        writer.close()
+    }
+
+    private Image loadImage( String name )
+    {
+        URL url = getClass().getClassLoader().getResource( name )
+        Image image = Image.getInstance( url )
+        return image
+    }
+
     def "hello"()
     {
         given: "document"
