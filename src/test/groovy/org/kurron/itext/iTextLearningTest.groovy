@@ -50,6 +50,8 @@ class iTextLearningTest extends Specification
     {
         URL url = getClass().getClassLoader().getResource( name )
         Image image = Image.getInstance( url )
+        image.setRotationDegrees( -10 )
+        image.scaleToFit( 500, 500 )
         return image
     }
 
